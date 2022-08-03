@@ -1,7 +1,10 @@
 using Microsoft.FeatureManagement;
 using Refit;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+   WebRootPath = "wwwroot"
+});
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables();

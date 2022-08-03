@@ -1,6 +1,11 @@
 ﻿@using Microsoft.FeatureManagement
 @inject IFeatureManager FeatureManager
 
+@if (featureIsEnabled)
+{
+    @ChildContent
+}
+
 @code {
     private bool featureIsEnabled = false;
 
