@@ -132,7 +132,7 @@ resource productsApp 'Microsoft.App/containerApps@2022-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: productsApiImage
           name: productsAppName
           env: [
             {
@@ -191,7 +191,7 @@ resource inventoryApp 'Microsoft.App/containerApps@2022-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: inventoryApiImage
           name: inventoryAppName
           env: [
             {
@@ -250,7 +250,7 @@ resource storeApp 'Microsoft.App/containerApps@2022-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: storeWebAppImage
           name: storeAppName
           env: [
             {
