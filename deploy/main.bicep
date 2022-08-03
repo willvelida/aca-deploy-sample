@@ -4,6 +4,15 @@ param location string = resourceGroup().location
 @description('The name of our application.')
 param applicationName string = uniqueString(resourceGroup().id)
 
+@description('The image used for the Products Api')
+param productsApiImage string
+
+@description('The image used by the Inventory Api')
+param inventoryApiImage string
+
+@description('The image used by the Store Web app')
+param storeWebAppImage string
+
 var containerRegistryName = '${applicationName}acr'
 var appConfigName = '${appInsightsName}config'
 var logAnalyticsWorkspaceName = '${applicationName}law'
@@ -267,6 +276,10 @@ resource storeApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'AzureAppConfig'
               value: appConfig.listKeys().value[0].connectionString
+            }
+            {
+              name: 'RevisionLabel'
+              value: 'BetaDisabled'
             }
           ]
         }

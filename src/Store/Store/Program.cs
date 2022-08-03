@@ -1,15 +1,23 @@
+using Microsoft.FeatureManagement;
 using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables();
+var appConfig = builder.Configuration.GetValue<string>("AzureAppConfig");
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(appConfig)
+    .UseFeatureFlags(featureFlagOptions => featureFlagOptions.Label = builder.Configuration.GetValue<string>("RevisionLabel"));
+});
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient("Products", (httpClient) => httpClient.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ProductsApi")));
 builder.Services.AddHttpClient("Inventory", (httpClient) => httpClient.BaseAddress = new Uri(builder.Configuration.GetValue<string>("InventoryApi")));
 builder.Services.AddScoped<IStoreBackendClient, StoreBackendClient>();
 builder.Services.AddMemoryCache();
+builder.Services.AddFeatureManagement();
 
 var app = builder.Build();
 
