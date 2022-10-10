@@ -27,19 +27,7 @@ jobs:
       - name: Sign into Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Get existing images
-        id: getimages
-        run: |
-          echo "Installing containerapp extension"
-          az extension add -n containerapp --yes
-          inventoryImage=$(az containerapp show --name inventory --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          productsImage=$(az containerapp show --name products --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          webImage=$(az containerapp show --name store --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          echo "::set-output name=inventoryImage::$inventoryImage"
-          echo "::set-output name=productsImage::$productsImage"
-          echo "::set-output name=webImage::$webImage"
+          creds: ${{ secrets.AZURE_CREDENTIALS }}      
 
       - name: Run preflight validation
         uses: azure/arm-deploy@v1
@@ -48,7 +36,6 @@ jobs:
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: ./deploy/main.bicep
           deploymentMode: Validate
-          parameters: productsApiImage=${{ steps.getimages.outputs.productsImage }} inventoryApiImage=${{ steps.getimages.outputs.inventoryImage }} storeWebAppImage=${{ steps.getimages.outputs.webImage }}
 
   preview:
     needs: [lint, validate]
@@ -59,24 +46,12 @@ jobs:
         name: Sign into Azure
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Get existing images
-        id: getimages
-        run: |
-          echo "Installing containerapp extension"
-          az extension add -n containerapp --yes
-          inventoryImage=$(az containerapp show --name inventory --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          productsImage=$(az containerapp show --name products --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          webImage=$(az containerapp show --name store --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          echo "::set-output name=inventoryImage::$inventoryImage"
-          echo "::set-output name=productsImage::$productsImage"
-          echo "::set-output name=webImage::$webImage"
-      
+     
       - uses: Azure/cli@v1
         name: Run what-if
         with:
           inlineScript: |
-            az deployment group what-if --resource-group ${{ secrets.AZURE_RG }} --template-file ./deploy/main.bicep --parameters productsApiImage=${{ steps.getimages.outputs.productsImage }} inventoryApiImage=${{ steps.getimages.outputs.inventoryImage }} storeWebAppImage=${{ steps.getimages.outputs.webImage }}
+            az deployment group what-if --resource-group ${{ secrets.AZURE_RG }} --template-file ./deploy/main.bicep
   
   deploy-infra:
     runs-on: ubuntu-latest
@@ -90,23 +65,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Get existing images
-        id: getimages
-        run: |
-          echo "Installing containerapp extension"
-          az extension add -n containerapp --yes
-          inventoryImage=$(az containerapp show --name inventory --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          productsImage=$(az containerapp show --name products --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          webImage=$(az containerapp show --name store --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
-          echo "::set-output name=inventoryImage::$inventoryImage"
-          echo "::set-output name=productsImage::$productsImage"
-          echo "::set-output name=webImage::$webImage"
-
       - name: Deploy Bicep Template
         uses: azure/arm-deploy@v1
         with:
           deploymentName: ${{ github.run_number }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: ./deploy/main.bicep
-          deploymentMode: Incremental
-          parameters: productsApiImage=${{ steps.getimages.outputs.productsImage }} inventoryApiImage=${{ steps.getimages.outputs.inventoryImage }} storeWebAppImage=${{ steps.getimages.outputs.webImage }}
+          deploymentMode: Incremental        
