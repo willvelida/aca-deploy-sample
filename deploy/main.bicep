@@ -18,6 +18,7 @@ var appConfigName = '${appInsightsName}config'
 var logAnalyticsWorkspaceName = '${applicationName}law'
 var appInsightsName = '${applicationName}ai'
 var containerAppEnvironmentName = '${applicationName}env'
+var loadTestName = '${applicationName}loadtest'
 var productsAppName = 'products'
 var inventoryAppName = 'inventory'
 var storeAppName = 'store'
@@ -293,4 +294,10 @@ resource storeApp 'Microsoft.App/containerApps@2022-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
+}
+
+resource loadTest 'Microsoft.LoadTestService/loadTests@2022-12-01' = {
+  name: loadTestName
+  location: location
+  properties: {}
 }
