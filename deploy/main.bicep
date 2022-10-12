@@ -286,7 +286,7 @@ resource storeApp 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 1
+        maxReplicas: 30
       }
     }
   }
